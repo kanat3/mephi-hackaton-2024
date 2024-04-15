@@ -1,0 +1,19 @@
+---
+
+services:
+    mephi-hackaton-2024:
+        container_name: hackaton_service
+        build:
+            context: ./scripts
+            dockerfile: Dockerfile
+        volumes:
+            - ./:/export/hackaton-2024
+        networks:
+            - hackaton-2024
+
+networks:
+    hackaton-2024:
+        name: hackaton-2024_default
+        driver: bridge
+
+...
