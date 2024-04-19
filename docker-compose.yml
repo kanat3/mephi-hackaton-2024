@@ -1,15 +1,29 @@
 ---
 
 services:
-    mephi-hackaton-2024:
-        container_name: hackaton_service
+    backend:
+        container_name: hackaton_backend
         build:
-            context: ./scripts
+            context: ./backend
             dockerfile: Dockerfile
         volumes:
-            - ./:/export/hackaton-2024
+            - ./backend:/export/hackaton-2024/backend
         networks:
             - hackaton-2024
+        ports:
+            - 8081:8081
+
+    frontend:
+        container_name: hackaton_frontend
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+        volumes:
+            - ./frontend:/export/hackaton-2024/frontend
+        networks:
+            - hackaton-2024
+        ports:
+            - 3000:3000
 
 networks:
     hackaton-2024:

@@ -1,11 +1,1 @@
-*
-
-!docker-compose.yml
-!scripts/
-!*.sh
-!Dockerfile
-!logs/
-!.gitkeep
-!.gitignore
-!.dockerignore
-!README.md
+logs/*.log
