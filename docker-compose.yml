@@ -12,6 +12,8 @@ services:
             - hackaton-2024
         ports:
             - 8081:8081
+        depends_on: 
+            - database
 
     frontend:
         container_name: hackaton_frontend
@@ -24,6 +26,10 @@ services:
             - hackaton-2024
         ports:
             - 3000:3000
+        depends_on: 
+            - database
+            - backend
+
     database:
         container_name: postgresql
         ports:
