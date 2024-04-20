@@ -1,7 +1,9 @@
 package api
 
 import (
+	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -29,7 +31,7 @@ func uploadVideo(c *gin.Context) {
 
 	fileExtension := strings.ToLower(file.Filename[strings.LastIndex(file.Filename, ".")+1:])
 
-	if fileExtension != "mp4" && fileExtension != "mp3" && fileExtension != "wav" {
+	if fileExtension != "mp4" && fileExtension != "mp3" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Use only mp3, mp4 or wav extention"})
 		return
 	}
@@ -43,5 +45,39 @@ func uploadVideo(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "File uploaded"})
+	uploadedFile, err := file.Open()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "from": op})
+		return
+	}
+
+	realFile, err := os.CreateTemp("", "tempfile-*.txt")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "from": op})
+		return
+	}
+	defer realFile.Close()
+
+	_, err = io.Copy(realFile, uploadedFile)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "from": op})
+		return
+	}
+
+	fileinfo, err := realFile.Stat()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "from": op})
+		return
+	}
+
+	fileBuffer := make([]byte, fileinfo.Size())
+
+	_, err = realFile.Read(fileBuffer)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "from": op})
+		return
+	}
+
+	c.Data(http.StatusOK, "video/"+fileExtension, fileBuffer)
+	//c.JSON(http.StatusOK, gin.H{"message": "File uploaded"})
 }
