@@ -22,7 +22,7 @@ func Status(c *gin.Context) {
 func uploadVideo(c *gin.Context) {
 	const op = "uploadVideo"
 
-	file, err := c.FormFile("files")
+	file, err := c.FormFile("file")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "from": op})
 		return
