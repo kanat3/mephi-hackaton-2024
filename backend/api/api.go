@@ -1,7 +1,6 @@
 package api
 
 import (
-	"io"
 	"net/http"
 	"os"
 	"strconv"
@@ -36,43 +35,21 @@ func uploadVideo(c *gin.Context) {
 		return
 	}
 
-	fileName := "res_vid_" + strconv.FormatInt(time.Now().Unix(), 10)
+	fileName := "records/res_vid_" + strconv.FormatInt(time.Now().Unix(), 10)
 
 	err = c.SaveUploadedFile(file, fileName+"."+fileExtension)
-
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "from": op})
 		return
 	}
 
-	uploadedFile, err := file.Open()
+	realFile, err := os.Open(fileName + "." + fileExtension)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "from": op})
 		return
 	}
-
-	realFile, err := os.CreateTemp("", "tempfile-*.txt")
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "from": op})
-		return
-	}
-	defer realFile.Close()
-
-	_, err = io.Copy(realFile, uploadedFile)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "from": op})
-		return
-	}
-
-	fileinfo, err := realFile.Stat()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "from": op})
-		return
-	}
-
-	fileBuffer := make([]byte, fileinfo.Size())
-
-	_, err = realFile.Read(fileBuffer)
+	realFileBuffer := make([]byte, file.Size)
+	_, err = realFile.Read(realFileBuffer)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "from": op})
 		return
@@ -80,8 +57,8 @@ func uploadVideo(c *gin.Context) {
 
 	switch fileExtension {
 	case "mp3":
-		c.Data(http.StatusOK, "audio/mp3", fileBuffer)
+		c.Data(http.StatusOK, "audio/mp3", realFileBuffer)
 	case "mp4":
-		c.Data(http.StatusOK, "video/mp4", fileBuffer)
+		c.Data(http.StatusOK, "video/mp4", realFileBuffer)
 	}
 }
