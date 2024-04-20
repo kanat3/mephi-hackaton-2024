@@ -15,7 +15,7 @@ function FileUploadComponent() {
     }
 
     try {
-      const response = await axios.post('http://localhost/video', formData, {
+      const response = await axios.post('http://localhost:8081/video', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
