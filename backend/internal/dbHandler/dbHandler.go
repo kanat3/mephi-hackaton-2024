@@ -2,7 +2,9 @@ package database
 
 import (
 	"fmt"
-	"interfaces"
+
+	"backend/internal/config"
+	"backend/internal/dbHandler/interfaces"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -13,12 +15,9 @@ type DbHandler struct {
 }
 
 func getDbHandler() interfaces.DbHandler {
-	//connectionString := config.DatabaseUrl
-	//connectionString := "host=localhost user=postgres password= dbname= port=5432 sslmode=disable"
+	cfg := config.GetConfig()
 	connectionString := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		s.dbSettings.Host, s.dbSettings.Port, s.dbSettings.User, s.dbSettings.Password,
-		s.dbSettings.DBname,
-	)
+		cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.DBname)
 
 	db, err := gorm.Open(postgres.Open(connectionString), &gorm.Config{})
 
