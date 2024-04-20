@@ -62,3 +62,9 @@ func uploadVideo(c *gin.Context) {
 		c.Data(http.StatusOK, "video/mp4", realFileBuffer)
 	}
 }
+
+/*
+func test() {
+	cmd := exec.Command("python3", "../internal/python-nn/predict.py", "")
+}
+*/
