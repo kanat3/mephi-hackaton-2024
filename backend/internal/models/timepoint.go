@@ -11,12 +11,12 @@ type Timepoint struct {
 	Start_Time time.Time
 	End_Time   time.Time
 
-	UserID uuid.UUID `gorm:"type:uuid;not null"`
+	UserID uuid.UUID `gorm:"type:uuid"`
 	User   User      `gorm:"foreignKey:UserID"`
 
-	MeetingID uuid.UUID `gorm:"type:uuid;not null"`
+	MeetingID uuid.UUID `gorm:"type:uuid"`
 	Meeting   Meeting   `gorm:"foreignKey:MeetingID"`
 
-	EmotionID uint    `gorm:"not null"`
+	EmotionID uint
 	Emotion   Emotion `gorm:"foreignKey:EmotionID"`
 }

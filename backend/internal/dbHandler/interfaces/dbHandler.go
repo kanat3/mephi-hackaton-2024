@@ -1,5 +1,7 @@
 package interfaces
 
+import "gorm.io/gorm"
+
 type DbHandler interface {
 	Create(object interface{})
 	DeleteById(object interface{}, id string)
