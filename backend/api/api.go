@@ -2,7 +2,9 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,8 +30,18 @@ func uploadVideo(c *gin.Context) {
 	fileExtension := strings.ToLower(file.Filename[strings.LastIndex(file.Filename, ".")+1:])
 
 	if fileExtension != "mp4" && fileExtension != "mp3" && fileExtension != "wav" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Use obly mp3, mp4 or wav extention"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Use only mp3, mp4 or wav extention"})
 		return
 	}
+
+	fileName := "res_vid_" + strconv.FormatInt(time.Now().Unix(), 10)
+
+	err = c.SaveUploadedFile(file, fileName+"."+fileExtension)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "from": op})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{"message": "File uploaded"})
 }
