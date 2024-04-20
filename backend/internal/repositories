@@ -1,0 +1,29 @@
+package repository
+
+import (
+	"models"
+	"dbHandler/interfaces"
+)
+
+type UserRepository struct {
+	interfaces.DbHandler
+}
+
+type MeetingRepository struct {
+	interfaces.DbHandler
+}
+
+func (db *UserRepository) Store(u models.User) {
+	db.Create(&u)
+}
+
+func (db *UserRepository) Select() []models.User {
+	users := []models.User{}
+	db.FindAll(&users)
+	return users
+}
+
+func (db *UserRepository) Delete(id string) {
+	var user []models.User
+	db.DeleteById(&user, id)
+}

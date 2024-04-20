@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sbinet/go-python"
 )
 
 func InitHandlers(r *gin.Engine) {
@@ -44,4 +45,37 @@ func uploadVideo(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "File uploaded"})
+	startVideoProcess(c)
+}
+
+func startVideoProcess(c *gin.Context) {
+	const op :=  "startVideoProcess"
+	modelPath := "model/video-model.pt"
+	modelBytes, err := ioutil.ReadFile(modelPath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "from": op})
+		return
+	}
+	
+	model := torch.NewModel()
+	err = model.LoadModel(modelBytes)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "from": op})
+		return
+	}
+	
+	/* add mp4 or mp3 */
+	/*
+	inputData :=
+	
+	outputData, err := model.Predict(inputData)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "from": op})
+		return
+	}
+	*/
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "from": op})
+		return
+	}
 }
