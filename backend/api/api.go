@@ -78,6 +78,10 @@ func uploadVideo(c *gin.Context) {
 		return
 	}
 
-	c.Data(http.StatusOK, "video/"+fileExtension, fileBuffer)
-	//c.JSON(http.StatusOK, gin.H{"message": "File uploaded"})
+	switch fileExtension {
+	case "mp3":
+		c.Data(http.StatusOK, "audio/mp3", fileBuffer)
+	case "mp4":
+		c.Data(http.StatusOK, "video/mp4", fileBuffer)
+	}
 }
