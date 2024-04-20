@@ -57,8 +57,8 @@ func uploadVideo(c *gin.Context) {
 
 	switch fileExtension {
 	case "mp3":
-		c.Data(http.StatusOK, "audio/mp3", realFileBuffer)
+		c.Data(http.StatusOK, "blob", realFileBuffer)
 	case "mp4":
-		c.Data(http.StatusOK, "video/mp4", realFileBuffer)
-	}
+		c.Data(http.StatusOK, "blob", realFileBuffer)
+	}	
 }
