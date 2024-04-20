@@ -36,9 +36,9 @@ function App() {
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
         </p>
-        { data.map(x => {
+        {/* { data.map(x => {
           <p style={{ background: "blue", color: "red"}}>{ x.name }</p>
-        }) }
+        }) } */}
         <p>{ data.name }</p>
         <p>{ data.status }</p>
       </div>
