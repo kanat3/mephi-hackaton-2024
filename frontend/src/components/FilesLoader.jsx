@@ -119,7 +119,7 @@ function FileUploadComponent() {
           {isLoading ? 'Загрузка...' : 'Отправить'}
         </button> </>}
         {mediaUrl && 
-            <video controls autoPlay down>
+            <video controls autoPlay>
               <source src={mediaUrl} type="video/mp4" />
             </video>
         }
