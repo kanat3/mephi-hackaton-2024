@@ -14,7 +14,9 @@
 # Saved files
 *.mp3
 *.mp4
+*.avi
 ./records
+./internal/python-nn/cache
 
 # Dependency directories (remove the comment below to include it)
 # vendor/

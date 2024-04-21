@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 	"time"
@@ -30,7 +31,7 @@ func uploadVideo(c *gin.Context) {
 
 	fileExtension := strings.ToLower(file.Filename[strings.LastIndex(file.Filename, ".")+1:])
 
-	if fileExtension != "mp4" && fileExtension != "mp3" {
+	if fileExtension != "mp4" && fileExtension != "mp3" && fileExtension != "via" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Use only mp3, mp4 or wav extention"})
 		return
 	}
@@ -61,10 +62,17 @@ func uploadVideo(c *gin.Context) {
 	case "mp4":
 		c.Data(http.StatusOK, "video/mp4", realFileBuffer)
 	}
+
+	/* */
+	//defer test(fileName, c)
 }
 
-/*
-func test() {
-	cmd := exec.Command("python3", "../internal/python-nn/predict.py", "")
+func test(fileName string, c *gin.Context) {
+	const op = "test"
+	outPath := "./cache"
+	cmd := exec.Command("python3", fileName, "True", "False", outPath)
+	_, err := cmd.Output() /* here get output */
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "from": op})
+	}
 }
-*/
