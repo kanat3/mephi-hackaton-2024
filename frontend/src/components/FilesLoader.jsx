@@ -74,7 +74,7 @@ function FileUploadComponent() {
 
       // if (file.type === 'audio/mp3' || file.type === 'video/mp4') {
         console.log("change");
-        setMediaUrl(mediaBlobUrl);
+        setTimeout(() => setMediaUrl(mediaBlobUrl), 10*1000);
       // }
     } catch (error) {
       console.error('Error uploading file:', error);
@@ -93,6 +93,7 @@ function FileUploadComponent() {
   return (
     !errorMessage ?
       <Container>
+        { !mediaUrl && <>
         <Wrapper
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
@@ -116,18 +117,12 @@ function FileUploadComponent() {
         </Wrapper>
         <button onClick={handleSubmit} disabled={isLoading}>
           {isLoading ? 'Загрузка...' : 'Отправить'}
-        </button>
-        {mediaUrl && (
-          file.type === 'audio/mp3' ? (
-            <audio controls autoPlay>
-              <source src={mediaUrl} type="audio/mp3"/>
-            </audio>
-          ) : (
-            <video controls autoPlay>
+        </button> </>}
+        {mediaUrl && 
+            <video controls autoPlay down>
               <source src={mediaUrl} type="video/mp4" />
             </video>
-          )
-        )}
+        }
       </Container> : <ErrorComponent errorObject={errorMessage} />
   );
 }
