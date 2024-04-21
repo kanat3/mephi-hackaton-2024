@@ -65,15 +65,15 @@ function FileUploadComponent() {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
-        responseType: 'audio/mp3' || 'video/mp4'
+        responseType: 'blob'
       });
       console.log('File uploaded successfully:', response.data);
 
-      // Создаем объект URL для бинарного содержимого
       const mediaBlobUrl = URL.createObjectURL(response.data);
+      console.log(mediaBlobUrl);
 
-      // Проверяем тип загруженного файла
       // if (file.type === 'audio/mp3' || file.type === 'video/mp4') {
+        console.log("change");
         setMediaUrl(mediaBlobUrl);
       // }
     } catch (error) {
@@ -119,14 +119,12 @@ function FileUploadComponent() {
         </button>
         {mediaUrl && (
           file.type === 'audio/mp3' ? (
-            <audio controls>
-              <source src={mediaUrl} type="audio/mp3" />
-              Your browser does not support the audio element.
+            <audio controls autoPlay>
+              <source src={mediaUrl} type="audio/mp3"/>
             </audio>
           ) : (
-            <video controls>
+            <video controls autoPlay>
               <source src={mediaUrl} type="video/mp4" />
-              Your browser does not support the video element.
             </video>
           )
         )}
