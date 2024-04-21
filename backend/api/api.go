@@ -1,15 +1,19 @@
 package api
 
 import (
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
+
+var wg sync.WaitGroup
 
 func InitHandlers(r *gin.Engine) {
 	r.GET("/status", Status)
@@ -31,7 +35,7 @@ func uploadVideo(c *gin.Context) {
 
 	fileExtension := strings.ToLower(file.Filename[strings.LastIndex(file.Filename, ".")+1:])
 
-	if fileExtension != "mp4" && fileExtension != "mp3" && fileExtension != "via" {
+	if fileExtension != "mp4" && fileExtension != "mp3" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Use only mp3, mp4 or wav extention"})
 		return
 	}
@@ -56,23 +60,44 @@ func uploadVideo(c *gin.Context) {
 		return
 	}
 
+	/* error if wait response */
+	//wg.Add(1)
+	startVideoProcess(fileName, c)
+	//wg.Wait()
+
 	switch fileExtension {
 	case "mp3":
 		c.Data(http.StatusOK, "blob", realFileBuffer)
 	case "mp4":
 		c.Data(http.StatusOK, "video/mp4", realFileBuffer)
 	}
-
-	/* */
-	//defer test(fileName, c)
 }
 
-func test(fileName string, c *gin.Context) {
-	const op = "test"
-	outPath := "./cache"
-	cmd := exec.Command("python3", fileName, "True", "False", outPath)
-	_, err := cmd.Output() /* here get output */
+func startVideoProcess(fileName string, c *gin.Context) {
+	const op = "startVideoProcess"
+	outPath := "./internal/python-nn/cache"
+	pyPath := "./internal/python-nn/predict-by-video.py"
+	cmd := exec.Command("python3", pyPath, fileName+".mp4", "True", outPath)
+	log.Printf("%s", cmd.String())
+	out, err := cmd.Output() /* here get output */
+	log.Printf("%s", out)
 	if err != nil {
+		wg.Done()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "from": op})
 	}
+	wg.Done()
+}
+
+func startAudioProcess(fileName string, c *gin.Context) {
+	const op = "startAudioProcess"
+	pyPath := "./internal/python-nn/predict-by-voice.py"
+	cmd := exec.Command("python3", pyPath, fileName+".mp3")
+	log.Printf("%s", cmd.String())
+	out, err := cmd.Output() /* here get output */
+	log.Printf("%s", out)
+	if err != nil {
+		wg.Done()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "from": op})
+	}
+	wg.Done()
 }
