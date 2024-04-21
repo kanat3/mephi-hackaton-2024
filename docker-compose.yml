@@ -24,6 +24,8 @@ services:
             - hackaton-2024
         ports:
             - 3000:3000
+        depends_on:
+            - backend
 
 networks:
     hackaton-2024:
