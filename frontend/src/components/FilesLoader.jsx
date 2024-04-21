@@ -4,6 +4,9 @@ import styled from "@emotion/styled";
 import { ErrorComponent } from './ErrorPage';
 import logo from "../assets/logo.png";
 import drugAndDrop from "../assets/dragAndDrop.png";
+import io from 'socket.io-client';
+
+const socket = io('ws://your-server-url');
 
 const Wrapper = styled.div`
   border: none;
@@ -49,6 +52,31 @@ function FileUploadComponent() {
     setFile(droppedFile);
   };
 
+  const uploadFileWithWebSocket = async (formData) => {
+    try {
+      // Отправляем запрос на сервер WebSocket с данными файла
+      socket.emit('http://localhost:8081/video', formData);
+  
+      // Ожидаем ответ от сервера
+      socket.on('uploadResponse', (response) => {
+        console.log('File uploaded successfully:', response.data);
+  
+        const mediaBlobUrl = URL.createObjectURL(response.data);
+  
+        // Проверяем тип загруженного файла
+        if (file.type === 'audio/mp3' || file.type === 'video/mp4') {
+          setMediaUrl(mediaBlobUrl);
+        }
+  
+        setIsLoading(false);
+      });
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      setErrorMessage(error);
+      setIsLoading(false);
+    }
+  };  
+
   const handleSubmit = async () => {
     if (!file) {
       alert('Выберите файл');
@@ -59,29 +87,30 @@ function FileUploadComponent() {
 
     const formData = new FormData();
     formData.append('file', file);
+    uploadFileWithWebSocket(formData);
 
-    try {
-      const response = await axios.post('http://localhost:8081/video', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        },
-        responseType: 'audio/mp3' || 'video/mp4'
-      });
-      console.log('File uploaded successfully:', response.data);
+    // try {
+    //   const response = await axios.post('http://localhost:8081/video', formData, {
+    //     headers: {
+    //       'Content-Type': 'multipart/form-data'
+    //     },
+    //     responseType: 'audio/mp3' || 'video/mp4'
+    //   });
+    //   console.log('File uploaded successfully:', response.data);
 
-      // Создаем объект URL для бинарного содержимого
-      const mediaBlobUrl = URL.createObjectURL(response.data);
+    //   // Создаем объект URL для бинарного содержимого
+    //   const mediaBlobUrl = URL.createObjectURL(response.data);
 
-      // Проверяем тип загруженного файла
-      // if (file.type === 'audio/mp3' || file.type === 'video/mp4') {
-        setMediaUrl(mediaBlobUrl);
-      // }
-    } catch (error) {
-      console.error('Error uploading file:', error);
-      setErrorMessage(error);
-    } finally {
-      setIsLoading(false);
-    }
+    //   // Проверяем тип загруженного файла
+    //   // if (file.type === 'audio/mp3' || file.type === 'video/mp4') {
+    //     setMediaUrl(mediaBlobUrl);
+    //   // }
+    // } catch (error) {
+    //   console.error('Error uploading file:', error);
+    //   setErrorMessage(error);
+    // } finally {
+    //   setIsLoading(false);
+    // }
   };
 
   const handleClick = () => {
