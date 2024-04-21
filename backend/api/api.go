@@ -60,15 +60,16 @@ func uploadVideo(c *gin.Context) {
 		return
 	}
 
-	/* error if wait response */
-	//wg.Add(1)
-	startVideoProcess(fileName, c)
-	//wg.Wait()
-
 	switch fileExtension {
 	case "mp3":
+		wg.Add(1)
+		startAudioProcess(fileName, c)
+		wg.Wait()
 		c.Data(http.StatusOK, "blob", realFileBuffer)
 	case "mp4":
+		wg.Add(1)
+		startVideoProcess(fileName, c)
+		wg.Wait()
 		c.Data(http.StatusOK, "video/mp4", realFileBuffer)
 	}
 }

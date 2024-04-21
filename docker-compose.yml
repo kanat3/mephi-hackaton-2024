@@ -12,8 +12,6 @@ services:
             - hackaton-2024
         ports:
             - 8081:8081
-        depends_on:
-            - database
 
     frontend:
         container_name: hackaton_frontend
@@ -27,28 +25,7 @@ services:
         ports:
             - 3000:3000
         depends_on:
-            - database
             - backend
-
-    database:
-        container_name: postgresql
-        ports:
-          - "5432:5432"
-        environment:
-          - POSTGRES_PASSWORD=root
-          - POSTGRES_USER=root
-        image: postgres:15.2-alpine
-        restart: always
-        volumes:
-          - ./database/cache/postgres-data/data:/var/lib/postgresql/data
-          - ./database/postgresql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
-        networks:
-          - hackaton-2024
-        healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U root -d root"]
-            interval: 10s
-            timeout: 5s
-            retries: 5
 
 networks:
     hackaton-2024:

@@ -75,7 +75,7 @@ class HubertForSpeechClassification(HubertPreTrainedModel):
         return x
 
 def main():
-    print("Run predict by video")
+    print("Run predict by voice")
     file_path = sys.argv[1]
 
     processor = Wav2Vec2FeatureExtractor.from_pretrained(model_name_or_path)
