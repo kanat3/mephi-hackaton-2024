@@ -7,13 +7,10 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
-
-var wg sync.WaitGroup
 
 func InitHandlers(r *gin.Engine) {
 	r.GET("/status", Status)
@@ -62,14 +59,8 @@ func uploadVideo(c *gin.Context) {
 
 	switch fileExtension {
 	case "mp3":
-		wg.Add(1)
-		startAudioProcess(fileName, c)
-		wg.Wait()
 		c.Data(http.StatusOK, "blob", realFileBuffer)
 	case "mp4":
-		wg.Add(1)
-		startVideoProcess(fileName, c)
-		wg.Wait()
 		c.Data(http.StatusOK, "video/mp4", realFileBuffer)
 	}
 }
@@ -83,10 +74,9 @@ func startVideoProcess(fileName string, c *gin.Context) {
 	out, err := cmd.Output() /* here get output */
 	log.Printf("%s", out)
 	if err != nil {
-		wg.Done()
+
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "from": op})
 	}
-	wg.Done()
 }
 
 func startAudioProcess(fileName string, c *gin.Context) {
@@ -97,8 +87,7 @@ func startAudioProcess(fileName string, c *gin.Context) {
 	out, err := cmd.Output() /* here get output */
 	log.Printf("%s", out)
 	if err != nil {
-		wg.Done()
+
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "from": op})
 	}
-	wg.Done()
 }
